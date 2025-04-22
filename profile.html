@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CasinoCommunity</title>
   <link rel="stylesheet" href="css/style.css" />
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js"></script>
+  <script src="js/firebase-config.js"></script>
 </head>
 <body>
   <header class="header">
@@ -22,61 +27,135 @@
         <li><a href="#">📬 Inbox</a></li>
         <li><a href="#">👥 Groups</a></li>
         <li><a href="#">💰 Wallet</a></li>
-        <li><a href="#">🎁 Bonuses</a></li>
+        <li><a href="#">🏱 Bonuses</a></li>
       </ul>
     </aside>
 
-  <main class="main-content">
-    <div class="cover-photo">
-      <img id="coverPhoto" src="assets/images/cover.jpg" alt="Cover Photo">
-      <input type="file" accept="image/*" onchange="uploadCover(event)" class="cover-upload">
-    </div>
-
-    <div class="profile-header">
-      <div class="avatar-wrapper">
-        <img id="profilePic" class="avatar" src="https://api.dicebear.com/6.x/thumbs/svg?seed=CasinoPlayer" alt="User Avatar" />
+    <main class="main-content">
+      <div class="cover-photo">
+        <img id="coverPhoto" src="assets/images/cover.jpg" alt="Cover Photo">
+        <input type="file" accept="image/*" onchange="uploadCover(event)" class="cover-upload">
       </div>
-      <div class="profile-info">
-        <input type="file" accept="image/*" onchange="uploadPic(event)" />
-        <input type="text" id="edit-username" placeholder="Enter your name" />
-        <textarea id="edit-bio" placeholder="Write your casino bio..."></textarea>
-        <div class="profile-actions">
-          <button onclick="saveProfile()">💾 Save Profile</button>
-          <button onclick="resetAvatar()">🗑️ Reset Avatar</button>
-          <button onclick="followUser()">➕ Follow</button>
+
+      <div class="profile-header">
+        <div class="avatar-wrapper">
+          <img id="profilePic" class="avatar" src="https://api.dicebear.com/6.x/thumbs/svg?seed=CasinoPlayer" alt="User Avatar" />
         </div>
-        <p class="followers">Followers: <span id="followerCount">0</span></p>
+        <div class="profile-info">
+          <input type="file" accept="image/*" onchange="uploadPic(event)" />
+          <input type="text" id="edit-username" placeholder="Enter your name" />
+          <textarea id="edit-bio" placeholder="Write your casino bio..."></textarea>
+          <div class="profile-actions">
+            <button onclick="saveProfile()">📀 Save Profile</button>
+            <button onclick="resetAvatar()">🗑️ Reset Avatar</button>
+            <button onclick="addFriend()">➕ Add Friend</button>
+          </div>
+          <p class="followers">Friends: <span id="followerCount">0</span></p>
+        </div>
       </div>
-    </div>
 
-    <div class="tabs">
-      <button class="active" onclick="switchTab('posts')">Posts</button>
-      <button onclick="switchTab('about')">About</button>
-      <button onclick="switchTab('friends')">Friends</button>
-      <button onclick="switchTab('photos')">Photos</button>
-    </div>
-
-    <div class="tab-content" id="postsTab">
-      <div class="story-bar">
-        <div class="story-circle"></div>
-        <div class="story-circle"></div>
-        <div class="story-circle"></div>
+      <div class="tabs">
+        <button class="active" onclick="switchTab('posts')">Posts</button>
+        <button onclick="switchTab('about')">About</button>
+        <button onclick="switchTab('friends')">Friends</button>
+        <button onclick="switchTab('photos')">Photos</button>
       </div>
-      <div class="post-box">
-        <textarea id="newProfilePost" placeholder="What's on your mind?"></textarea>
-        <button onclick="addProfilePost()">Post</button>
+
+      <div class="tab-content" id="postsTab">
+        <div class="story-bar">
+          <div class="story-circle"></div>
+          <div class="story-circle"></div>
+          <div class="story-circle"></div>
+        </div>
+        <div class="post-box">
+          <textarea id="newProfilePost" placeholder="What's on your mind?"></textarea>
+          <button onclick="addProfilePost()">Post</button>
+        </div>
+        <div id="profilePosts"></div>
       </div>
-      <div id="profilePosts"></div>
-    </div>
 
-    <div class="tab-content" id="aboutTab" style="display:none;"></div>
-    <div class="tab-content" id="friendsTab" style="display:none;"></div>
-    <div class="tab-content" id="photosTab" style="display:none;"></div>
-  </main>
+      <div class="tab-content" id="aboutTab" style="display:none;"></div>
+      <div class="tab-content" id="friendsTab" style="display:none;">
+        <ul id="friendList"></ul>
+      </div>
+      <div class="tab-content" id="photosTab" style="display:none;"></div>
+    </main>
+  </div>
 
-  <script src="js/main.js"></script>
   <script>
-    // Initialize tab on load
+    function switchTab(tabId) {
+      document.querySelectorAll(".tab-content").forEach(tab => tab.style.display = "none");
+      document.getElementById(tabId + "Tab").style.display = "block";
+      document.querySelectorAll(".tabs button").forEach(btn => btn.classList.remove("active"));
+      document.querySelector(`.tabs button[onclick="switchTab('${tabId}')"]`).classList.add("active");
+    }
+
+    function uploadPic(event) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        localStorage.setItem("profilePic", reader.result);
+        document.getElementById("profilePic").src = reader.result;
+      };
+      reader.readAsDataURL(event.target.files[0]);
+    }
+
+    function uploadCover(event) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        localStorage.setItem("coverPhoto", reader.result);
+        document.getElementById("coverPhoto").src = reader.result;
+      };
+      reader.readAsDataURL(event.target.files[0]);
+    }
+
+    function saveProfile() {
+      const uid = localStorage.getItem("casocUID");
+      const name = document.getElementById("edit-username").value;
+      const bio = document.getElementById("edit-bio").value;
+      const avatar = document.getElementById("profilePic").src;
+      firebase.database().ref("users/" + uid).update({
+        displayName: name,
+        bio: bio,
+        avatar: avatar
+      });
+      alert("Profile saved!");
+    }
+
+    function resetAvatar() {
+      document.getElementById("profilePic").src = "https://api.dicebear.com/6.x/thumbs/svg?seed=CasinoPlayer";
+    }
+
+    function addFriend() {
+      const currentUserId = localStorage.getItem("casocUID");
+      const viewedUserId = localStorage.getItem("viewingUserId");
+      if (!currentUserId || !viewedUserId) return alert("User ID missing");
+      firebase.database().ref(`users/${currentUserId}/friends/${viewedUserId}`).set(true);
+      firebase.database().ref(`users/${viewedUserId}/friends/${currentUserId}`).set(true);
+      alert("Friend added!");
+    }
+
+    function populateFriends() {
+      const uid = localStorage.getItem("casocUID");
+      firebase.database().ref(`users/${uid}/friends`).once("value").then(snapshot => {
+        const friends = snapshot.val();
+        const list = document.getElementById("friendList");
+        list.innerHTML = "";
+        if (!friends) return list.innerHTML = "<li>No friends yet.</li>";
+        Object.keys(friends).forEach(friendId => {
+          firebase.database().ref("users/" + friendId).once("value").then(friendSnap => {
+            const data = friendSnap.val();
+            const li = document.createElement("li");
+            li.textContent = `${data.firstName || "Player"} ${data.lastName || ""}`;
+            list.appendChild(li);
+          });
+        });
+      });
+    }
+
+    function populateAbout() {}
+    function populatePhotos() {}
+    function addProfilePost() {}
+
     document.addEventListener("DOMContentLoaded", () => {
       switchTab("posts");
       populateAbout();

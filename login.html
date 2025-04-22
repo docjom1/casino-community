@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CASOC Login</title>
+  <title>CASOC Login & Register</title>
   <link rel="stylesheet" href="style/style.css" />
   <style>
     body {
@@ -124,17 +124,23 @@
       const email = document.getElementById("regEmail").value;
       const password = document.getElementById("regPassword").value;
 
-      firebase.auth().createUserWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-          const user = userCredential.user;
-          user.sendEmailVerification().then(() => {
-            alert("✅ Verification email sent! Check your inbox.");
-            showLogin();
-          });
+      firebase.auth().fetchSignInMethodsForEmail(email)
+        .then((methods) => {
+          if (methods.length > 0) {
+            alert("❌ Email already in use!");
+            return;
+          }
+          return firebase.auth().createUserWithEmailAndPassword(email, password);
         })
-        .catch((error) => {
-          alert("Error: " + error.message);
-        });
+        .then((userCredential) => {
+          if (!userCredential) return;
+          return userCredential.user.sendEmailVerification();
+        })
+        .then(() => {
+          alert("✅ Verification email sent! Check your inbox.");
+          showLogin();
+        })
+        .catch((error) => alert("Error: " + error.message));
     }
 
     function loginUser() {
@@ -144,17 +150,15 @@
       firebase.auth().signInWithEmailAndPassword(email, password)
         .then((userCredential) => {
           const user = userCredential.user;
-          if (user.emailVerified) {
-            alert("Login successful!");
-            localStorage.setItem("casocUID", user.uid);
-            window.location.href = "index.html";
-          } else {
-            alert("❌ Please verify your email first before logging in.");
+          if (!user.emailVerified) {
+            alert("❌ Please verify your email first.");
+            return;
           }
+          alert("✅ Login successful!");
+          localStorage.setItem("casocUID", user.uid);
+          window.location.href = "index.html";
         })
-        .catch((error) => {
-          alert("Login failed: " + error.message);
-        });
+        .catch((error) => alert("Login failed: " + error.message));
     }
 
     function forgotPassword() {
@@ -171,6 +175,11 @@
       firebase.auth().signInWithPopup(provider)
         .then((result) => {
           const user = result.user;
+          if (!user.emailVerified) {
+            user.sendEmailVerification().then(() => {
+              alert("⚠️ Verification sent to your Google email.");
+            });
+          }
           alert("✅ Google login successful!");
           localStorage.setItem("casocUID", user.uid);
           window.location.href = "index.html";
