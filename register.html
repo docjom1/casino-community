@@ -5,6 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Register – Casino Community</title>
   <link rel="stylesheet" href="style/style.css"/>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyB0-t9Cs-Z5jTTcuHPoLNDGrO9YPtRkoi4",
+      authDomain: "casinocommunity-fa874.firebaseapp.com",
+      projectId: "casinocommunity-fa874",
+      storageBucket: "casinocommunity-fa874.appspot.com",
+      messagingSenderId: "507208791665",
+      appId: "1:507208791665:web:a95bc2ea18a75ee1e427d0",
+      databaseURL: "https://casinocommunity-fa874-default-rtdb.asia-southeast1.firebasedatabase.app"
+    };
+    firebase.initializeApp(firebaseConfig);
+  </script>
 </head>
 <body>
   <header>
@@ -20,6 +36,31 @@
     <p>Already have an account? <a href="login.html">Login here</a></p>
   </main>
 
-  <script src="js/main.js"></script>
+  <script>
+    function registerUser(event) {
+      event.preventDefault();
+      const username = document.getElementById("regUsername").value;
+      const password = document.getElementById("regPassword").value;
+      const uid = "uid_" + Date.now();
+
+      const userData = {
+        username: username,
+        password: password,
+        createdAt: new Date().toISOString()
+      };
+
+      firebase.database().ref("users/" + uid).set(userData)
+        .then(() => {
+          localStorage.setItem("casocUID", uid);
+          alert("Registration successful!");
+          window.location.href = "profile.html";
+        })
+        .catch(error => {
+          console.error("Firebase Error:", error);
+          alert("Registration failed!");
+        });
+      return false;
+    }
+  </script>
 </body>
 </html>
