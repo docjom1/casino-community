@@ -12,7 +12,6 @@
       font-family: Arial, sans-serif;
       background-color: #f0f2f5;
     }
-
     .container {
       display: flex;
       justify-content: space-between;
@@ -20,22 +19,18 @@
       height: 100vh;
       padding: 0 10%;
     }
-
     .brand {
       flex: 1;
       color: #1877f2;
     }
-
     .brand h1 {
       font-size: 56px;
       margin-bottom: 0;
     }
-
     .brand p {
       font-size: 24px;
       color: #1c1e21;
     }
-
     .form-box {
       flex: 1;
       max-width: 400px;
@@ -44,17 +39,13 @@
       border-radius: 8px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
-
-    .form-box input[type="text"],
-    .form-box input[type="password"],
-    .form-box input[type="email"] {
-      width: 100%;
+    .form-box input {
+      width: 95%;
       padding: 12px;
       margin-bottom: 12px;
       border: 1px solid #ddd;
       border-radius: 4px;
     }
-
     .form-box button {
       width: 100%;
       background-color: #1877f2;
@@ -65,20 +56,16 @@
       font-size: 16px;
       cursor: pointer;
     }
-
     .form-box button:hover {
       background-color: #166fe5;
     }
-
     .form-box .create {
       background-color: #42b72a;
       margin-top: 12px;
     }
-
     .form-box .create:hover {
       background-color: #36a420;
     }
-
     .form-box .link {
       display: block;
       text-align: center;
@@ -97,12 +84,13 @@
     </div>
 
     <div class="form-box" id="loginBox">
-      <input type="text" placeholder="Email or username" id="username" required />
+      <input type="email" placeholder="Email" id="username" required />
       <input type="password" placeholder="Password" id="password" required />
       <button onclick="loginUser()">Log In</button>
-      <a href="#" class="link">Forgot password?</a>
+      <a href="#" class="link" onclick="forgotPassword()">Forgot password?</a>
       <hr />
       <button class="create" onclick="showRegister()">Create new account</button>
+      <button class="create" style="background:#db4437" onclick="googleLogin()">Sign in with Google</button>
     </div>
 
     <div class="form-box" id="registerBox" style="display: none;">
@@ -114,6 +102,12 @@
       <a href="#" class="link" onclick="showLogin()">Already have an account?</a>
     </div>
   </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js"></script>
+  <script src="js/firebase-config.js"></script>
 
   <script>
     function showRegister() {
@@ -127,30 +121,61 @@
     }
 
     function registerUser() {
-      const user = {
-        username: document.getElementById("regEmail").value,
-        password: document.getElementById("regPassword").value
-      };
-      const users = JSON.parse(localStorage.getItem("casocUsers")) || [];
-      users.push(user);
-      localStorage.setItem("casocUsers", JSON.stringify(users));
-      alert("Registration successful!");
-      showLogin();
+      const email = document.getElementById("regEmail").value;
+      const password = document.getElementById("regPassword").value;
+
+      firebase.auth().createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          user.sendEmailVerification().then(() => {
+            alert("✅ Verification email sent! Check your inbox.");
+            showLogin();
+          });
+        })
+        .catch((error) => {
+          alert("Error: " + error.message);
+        });
     }
 
     function loginUser() {
-      const username = document.getElementById("username").value;
+      const email = document.getElementById("username").value;
       const password = document.getElementById("password").value;
-      const users = JSON.parse(localStorage.getItem("casocUsers")) || [];
-      const user = users.find(u => u.username === username && u.password === password);
 
-      if (user) {
-        alert("Login successful!");
-        localStorage.setItem("casocSession", JSON.stringify(user));
-        window.location.href = "index.html";
-      } else {
-        alert("Invalid credentials.");
-      }
+      firebase.auth().signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          if (user.emailVerified) {
+            alert("Login successful!");
+            localStorage.setItem("casocUID", user.uid);
+            window.location.href = "index.html";
+          } else {
+            alert("❌ Please verify your email first before logging in.");
+          }
+        })
+        .catch((error) => {
+          alert("Login failed: " + error.message);
+        });
+    }
+
+    function forgotPassword() {
+      const email = document.getElementById("username").value;
+      if (!email) return alert("Enter your email first!");
+
+      firebase.auth().sendPasswordResetEmail(email)
+        .then(() => alert("📧 Password reset email sent!"))
+        .catch((error) => alert("❌ Error: " + error.message));
+    }
+
+    function googleLogin() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      firebase.auth().signInWithPopup(provider)
+        .then((result) => {
+          const user = result.user;
+          alert("✅ Google login successful!");
+          localStorage.setItem("casocUID", user.uid);
+          window.location.href = "index.html";
+        })
+        .catch((error) => alert("❌ Google Login Error: " + error.message));
     }
   </script>
 </body>
