@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CASOC Login</title>
+  <link rel="stylesheet" href="style/style.css" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f0f2f5;
+    }
+
+    .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 100vh;
+      padding: 0 10%;
+    }
+
+    .brand {
+      flex: 1;
+      color: #1877f2;
+    }
+
+    .brand h1 {
+      font-size: 56px;
+      margin-bottom: 0;
+    }
+
+    .brand p {
+      font-size: 24px;
+      color: #1c1e21;
+    }
+
+    .form-box {
+      flex: 1;
+      max-width: 400px;
+      background: white;
+      padding: 24px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-box input[type="text"],
+    .form-box input[type="password"],
+    .form-box input[type="email"] {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .form-box button {
+      width: 100%;
+      background-color: #1877f2;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .form-box button:hover {
+      background-color: #166fe5;
+    }
+
+    .form-box .create {
+      background-color: #42b72a;
+      margin-top: 12px;
+    }
+
+    .form-box .create:hover {
+      background-color: #36a420;
+    }
+
+    .form-box .link {
+      display: block;
+      text-align: center;
+      margin-top: 10px;
+      color: #1877f2;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="brand">
+      <img src="assets/casoc.png" class="logo" alt="CASOC Logo" />
+      <h1>Casino Soc Med</h1>
+      <p>Connect with players and the casino world around you on CASOC.</p>
+    </div>
+
+    <div class="form-box" id="loginBox">
+      <input type="text" placeholder="Email or username" id="username" required />
+      <input type="password" placeholder="Password" id="password" required />
+      <button onclick="loginUser()">Log In</button>
+      <a href="#" class="link">Forgot password?</a>
+      <hr />
+      <button class="create" onclick="showRegister()">Create new account</button>
+    </div>
+
+    <div class="form-box" id="registerBox" style="display: none;">
+      <input type="text" placeholder="First name" id="firstName" required />
+      <input type="text" placeholder="Last name" id="lastName" required />
+      <input type="email" placeholder="Email" id="regEmail" required />
+      <input type="password" placeholder="New password" id="regPassword" required />
+      <button onclick="registerUser()">Sign Up</button>
+      <a href="#" class="link" onclick="showLogin()">Already have an account?</a>
+    </div>
+  </div>
+
+  <script>
+    function showRegister() {
+      document.getElementById("loginBox").style.display = "none";
+      document.getElementById("registerBox").style.display = "block";
+    }
+
+    function showLogin() {
+      document.getElementById("registerBox").style.display = "none";
+      document.getElementById("loginBox").style.display = "block";
+    }
+
+    function registerUser() {
+      const user = {
+        username: document.getElementById("regEmail").value,
+        password: document.getElementById("regPassword").value
+      };
+      const users = JSON.parse(localStorage.getItem("casocUsers")) || [];
+      users.push(user);
+      localStorage.setItem("casocUsers", JSON.stringify(users));
+      alert("Registration successful!");
+      showLogin();
+    }
+
+    function loginUser() {
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      const users = JSON.parse(localStorage.getItem("casocUsers")) || [];
+      const user = users.find(u => u.username === username && u.password === password);
+
+      if (user) {
+        alert("Login successful!");
+        localStorage.setItem("casocSession", JSON.stringify(user));
+        window.location.href = "index.html";
+      } else {
+        alert("Invalid credentials.");
+      }
+    }
+  </script>
+</body>
+</html>

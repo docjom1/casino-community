@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Inbox – Casino Community</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="js/main.js"></script>
+
+</head>
+<body>
+    <header class="header">
+        <div class="logo-title">
+          <img src="assets/casoc.png" alt="Casino Logo" class="logo" />
+          <h1>Global Community</h1>
+        </div>
+      </header>
+      
+
+  <aside class="sidebar">
+    <ul>
+      <li><span class="icon">🏠</span> <a href="index.html">Home</a></li>
+      <li><span class="icon">👤</span> <a href="profile.html">Profile</a></li>
+      <li><span class="icon">📬</span> <a href="inbox.html">Inbox</a></li>
+      <li><span class="icon">🎰</span> <a href="#">Slots</a></li>
+      <li><span class="icon">⚽</span> <a href="#">Sports</a></li>
+      <li><span class="icon">💰</span> <a href="#">Wallet</a></li>
+      <li><span class="icon">🏱</span> <a href="#">Bonuses</a></li>
+    </ul>
+  </aside>
+
+  <main class="main-content">
+    <div class="chat-header">
+      <h2>Inbox – Messages</h2>
+      <div class="chat-actions">
+        <button type="button" onclick="logout()">🚪 Logout</button>
+      </div>
+    </div>
+
+    <section class="chat-container">
+      <div class="chat-log" id="chatLog">
+        <!-- Messages appear here -->
+      </div>
+
+      <div class="chat-input">
+        <input type="text" id="chatMessage" placeholder="Send a message..." />
+        <button type="button" onclick="sendMessage()">Send</button>
+        <button type="button" onclick="clearChat()">🧹 Clear Chat</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/main.js"></script>
+  <script>
+    // 🔐 Redirect if not logged in
+    if (!localStorage.getItem("username")) {
+      alert("Please log in to access the inbox.");
+      window.location.href = "login.html";
+    }
+
+    // 🔄 Load chat after DOM loads
+    document.addEventListener("DOMContentLoaded", () => {
+      if (typeof loadChat === "function") loadChat();
+    });
+  </script>
+</body>
+</html>

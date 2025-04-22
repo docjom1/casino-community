@@ -1,0 +1,60 @@
+<!-- bonuses.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bonuses – CASOC</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="header">
+    <img src="assets/casoc.png" alt="Casino Logo" class="logo">
+    <h1>🎁 Bonuses</h1>
+  </header>
+
+  <aside class="sidebar">
+    <ul>
+      <li><a href="index.html">🏠 Home</a></li>
+      <li><a href="profile.html">👤 Profile</a></li>
+      <li><a href="inbox.html">📬 Inbox</a></li>
+      <li><a href="slots.html">🎰 Slots</a></li>
+      <li><a href="sports.html">⚽ Sports</a></li>
+      <li><a href="wallet.html">💰 Wallet</a></li>
+      <li><a href="bonuses.html">🎁 Bonuses</a></li>
+    </ul>
+  </aside>
+
+  <main class="main-content">
+    <div class="bonus-box">
+      <h2>🎉 Claim Your Bonuses</h2>
+
+      <div class="bonus-card">
+        <h3>Daily Login Bonus</h3>
+        <p>Get C500 every day you log in!</p>
+        <button onclick="claimDailyBonus()">Claim</button>
+      </div>
+
+      <div id="bonusMessage" class="message"></div>
+    </div>
+  </main>
+
+  <script>
+    function claimDailyBonus() {
+      const lastClaim = localStorage.getItem("lastBonusClaim");
+      const today = new Date().toDateString();
+
+      if (lastClaim === today) {
+        document.getElementById("bonusMessage").textContent = "⚠️ Already claimed for today!";
+        return;
+      }
+
+      let balance = parseFloat(localStorage.getItem("walletBalance")) || 0;
+      balance += 500;
+      localStorage.setItem("walletBalance", balance);
+      localStorage.setItem("lastBonusClaim", today);
+      document.getElementById("bonusMessage").textContent = "✅ Bonus C500 added to your wallet!";
+    }
+  </script>
+</body>
+</html>

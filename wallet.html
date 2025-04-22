@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wallet – Casino Community</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="header">
+    <img src="assets/casoc.png" alt="Casino Logo" class="logo">
+    <h1>My Wallet</h1>
+  </header>
+
+  <aside class="sidebar">
+    <ul>
+      <li><span class="icon">🏠</span> <a href="index.html">Home</a></li>
+      <li><span class="icon">👤</span> <a href="profile.html">Profile</a></li>
+      <li><span class="icon">📬</span> <a href="inbox.html">Inbox</a></li>
+      <li><span class="icon">🎰</span> <a href="slots.html">Slots</a></li>
+      <li><span class="icon">⚽</span> <a href="sports.html">Sports</a></li>
+      <li><span class="icon">💰</span> <a href="wallet.html">Wallet</a></li>
+      <li><span class="icon">🎁</span> <a href="#">Bonuses</a></li>
+    </ul>
+  </aside>
+
+  <main class="main-content">
+    <div class="wallet-box">
+      <h2>💳 Account Balance</h2>
+      <p class="wallet-balance">Your Balance: <strong id="walletBalance">10,000.00</strong></p>
+
+
+      <div class="wallet-actions">
+        <input type="number" id="amountInput" placeholder="Enter amount..." />
+        <button onclick="deposit()">Deposit</button>
+        <button onclick="withdraw()">Withdraw</button>
+      </div>
+
+      <div class="wallet-history">
+        <h3>Transaction History</h3>
+        <ul id="walletHistory"></ul>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/main.js"></script>
+  <script>
+    let balance = parseFloat(localStorage.getItem("walletBalance")) || 10000;
+  
+    function updateWallet() {
+        document.getElementById("walletBalance").textContent = `C${balance.toLocaleString()}`;
+      }
+      
+      function addTransaction(type, amount) {
+        const li = document.createElement("li");
+        li.textContent = `${type} C${amount.toLocaleString()} – ${new Date().toLocaleString()}`;
+        document.getElementById("walletHistory").prepend(li);
+      
+        // Save to localStorage if needed
+      }
+      
+  
+      // 🧠 Save history
+      const oldData = JSON.parse(localStorage.getItem("walletHistory")) || [];
+      oldData.unshift(li.textContent);
+      localStorage.setItem("walletHistory", JSON.stringify(oldData));
+    }
+  
+    function loadHistory() {
+      const history = JSON.parse(localStorage.getItem("walletHistory")) || [];
+      const ul = document.getElementById("walletHistory");
+      history.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        ul.appendChild(li);
+      });
+    }
+  
+    document.addEventListener("DOMContentLoaded", () => {
+      updateWallet();
+      loadHistory();
+    });
+  </script>
+  
+</body>
+</html>

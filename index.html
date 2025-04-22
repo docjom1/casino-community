@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CASOC Feed</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="js/main.js"></script>
+
+</head>
+<body>
+  <header class="header">
+    <div class="logo-title">
+      <img src="assets/casoc.png" class="logo" alt="CASOC Logo" />
+      <h1>CASOC Social</h1>
+    </div>
+    <div class="post-input-top">
+      <input type="text" placeholder="What's on your mind?" />
+      <button>📸</button>
+      <button>🎥</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <aside class="sidebar">
+      <ul>
+        <li><a href="#">🏠 Home</a></li>
+        <li><a href="profile.html">👤 Profile</a></li>
+        <li><a href="#">📬 Inbox</a></li>
+        <li><a href="#">👥 Groups</a></li>
+        <li><a href="#">💰 Wallet</a></li>
+        <li><a href="#">🎁 Bonuses</a></li>
+      </ul>
+    </aside>
+
+    <div class="main-flex">
+      <main class="newsfeed">
+        <div class="story-strip">
+          <div class="story"><img src="assets/story1.jpg" alt="Story" /></div>
+          <div class="story"><img src="assets/story2.jpg" alt="Story" /></div>
+          <div class="story"><img src="assets/story3.jpg" alt="Story" /></div>
+        </div>
+
+        <div class="post-box">
+          <textarea id="postInput" placeholder="Share something with CASOC..."></textarea>
+          <input type="file" id="mediaUpload" accept="image/*,video/*" />
+          <button onclick="createPost()">Post</button>
+        </div>
+
+        <div id="newsFeed" class="news-feed"></div>
+      </main>
+
+      <aside class="sidebar-right">
+        <h3>Sponsored</h3>
+        <div class="sponsor">
+          <img src="assets/images/slot1.png" alt="Ad" />
+          <p><a href="#">Best Casino Tips</a></p>
+        </div>
+        <div class="sponsor">
+          <img src="assets/images/slot1.png" alt="Ad" />
+          <p><a href="#">Win CREDITS Now!</a></p>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div id="imageModal" class="modal">
+    <span class="close-modal" onclick="closeModal()">&times;</span>
+    <img class="modal-content" id="zoomedImg" />
+    <div class="modal-overlay"></div>
+  </div>
+
+
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CasinoCommunity</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="logo-title">
+      <img src="assets/casoc.png" alt="Casino Logo" class="logo" />
+      <h1>Global Community</h1>
+    </div>
+  </header>
+
+  <div class="container">
+    <aside class="sidebar">
+      <ul>
+        <li><a href="index.html">🏠 Home</a></li>
+        <li><a href="profile.html">👤 Profile</a></li>
+        <li><a href="#">📬 Inbox</a></li>
+        <li><a href="#">👥 Groups</a></li>
+        <li><a href="#">💰 Wallet</a></li>
+        <li><a href="#">🎁 Bonuses</a></li>
+      </ul>
+    </aside>
+
+  <main class="main-content">
+    <div class="cover-photo">
+      <img id="coverPhoto" src="assets/images/cover.jpg" alt="Cover Photo">
+      <input type="file" accept="image/*" onchange="uploadCover(event)" class="cover-upload">
+    </div>
+
+    <div class="profile-header">
+      <div class="avatar-wrapper">
+        <img id="profilePic" class="avatar" src="https://api.dicebear.com/6.x/thumbs/svg?seed=CasinoPlayer" alt="User Avatar" />
+      </div>
+      <div class="profile-info">
+        <input type="file" accept="image/*" onchange="uploadPic(event)" />
+        <input type="text" id="edit-username" placeholder="Enter your name" />
+        <textarea id="edit-bio" placeholder="Write your casino bio..."></textarea>
+        <div class="profile-actions">
+          <button onclick="saveProfile()">💾 Save Profile</button>
+          <button onclick="resetAvatar()">🗑️ Reset Avatar</button>
+          <button onclick="followUser()">➕ Follow</button>
+        </div>
+        <p class="followers">Followers: <span id="followerCount">0</span></p>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="active" onclick="switchTab('posts')">Posts</button>
+      <button onclick="switchTab('about')">About</button>
+      <button onclick="switchTab('friends')">Friends</button>
+      <button onclick="switchTab('photos')">Photos</button>
+    </div>
+
+    <div class="tab-content" id="postsTab">
+      <div class="story-bar">
+        <div class="story-circle"></div>
+        <div class="story-circle"></div>
+        <div class="story-circle"></div>
+      </div>
+      <div class="post-box">
+        <textarea id="newProfilePost" placeholder="What's on your mind?"></textarea>
+        <button onclick="addProfilePost()">Post</button>
+      </div>
+      <div id="profilePosts"></div>
+    </div>
+
+    <div class="tab-content" id="aboutTab" style="display:none;"></div>
+    <div class="tab-content" id="friendsTab" style="display:none;"></div>
+    <div class="tab-content" id="photosTab" style="display:none;"></div>
+  </main>
+
+  <script src="js/main.js"></script>
+  <script>
+    // Initialize tab on load
+    document.addEventListener("DOMContentLoaded", () => {
+      switchTab("posts");
+      populateAbout();
+      populateFriends();
+      populatePhotos();
+    });
+  </script>
+</body>
+</html>
